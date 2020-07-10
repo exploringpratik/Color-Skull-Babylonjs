@@ -16,14 +16,24 @@ var createScene = function () {
     camera.attachControl(canvas, false);
 
     var assetsManager = new BABYLON.AssetsManager(scene);
-    var meshTask = assetsManager.addMeshTask("skull task", "", "scenes/", "skull.babylon");
+    // var meshTask = ass/etsManager.addMeshTask("mtask", "", "scenes/", "skull.babylon");
+    var meshTask = assetsManager.addMeshTask("mtask", "", "./", "cubemtlobj.obj");
+
+    // var meshTask = BABYLON.SceneLoader.Append('./', 'cube.obj', scene, function (meshes) {
+    //     scene.createDefaultCameraOrLight(true, true, true);
+    // })
 
     meshTask.onSuccess = function (task) {
         console.log('loaded ' + task.loadedMeshes[1])
-        task.loadedMeshes[0].position = BABYLON.Vector3.Zero();
-        let material = task.loadedMeshes[0].material = new BABYLON.StandardMaterial('mat', scene);
+        task.loadedMeshes[1].position = BABYLON.Vector3.Zero();
+        let material = task.loadedMeshes[1].material
+            = new BABYLON.StandardMaterial('mat', scene);
         // material.emissiveColor = BABYLON.Color3.Blue();
         material.diffuseColor = BABYLON.Color3.Red();
+        let material1 = task.loadedMeshes[0].material
+            = new BABYLON.StandardMaterial('mat', scene);
+        // material.emissiveColor = BABYLON.Color3.Blue();
+        material1.diffuseColor = BABYLON.Color3.Green();
     }
 
     // Move the light with the camera
