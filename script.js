@@ -1,56 +1,49 @@
-
 var canvas = document.getElementById("renderCanvas");
 
 var engine = null;
 var scene = null;
 var sceneToRender = null;
+var mesh = null;
 var createDefaultEngine = function () { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true }); };
 var createScene = function () {
+
+    // This creates a basic Babylon Scene object (non-mesh)
     var scene = new BABYLON.Scene(engine);
 
-    //Adding a light
-    var light = new BABYLON.PointLight("Omni", new BABYLON.Vector3(20, 20, 100), scene);
+    var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, new BABYLON.Vector3(0, 0, 0), scene);
+    camera.setPosition(new BABYLON.Vector3(1, 1, 1));
 
-    //Adding an Arc Rotate Camera
-    var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0.8, 100, BABYLON.Vector3.Zero(), scene);
-    camera.attachControl(canvas, false);
+    // This targets the camera to scene origin
+    camera.setTarget(BABYLON.Vector3.Zero());
 
-    var assetsManager = new BABYLON.AssetsManager(scene);
-    // var meshTask = ass/etsManager.addMeshTask("mtask", "", "scenes/", "skull.babylon");
-    var meshTask = assetsManager.addMeshTask("mtask", "", "./", "cubemtlobj.obj");
+    // This attaches the camera to the canvas
+    camera.attachControl(canvas, true);
+    camera.lowerBetaLimit = 0.1;
+    camera.upperBetaLimit = (Math.PI / 2) * 0.99;
+    camera.lowerRadiusLimit = 10;
 
-    // var meshTask = BABYLON.SceneLoader.Append('./', 'cube.obj', scene, function (meshes) {
-    //     scene.createDefaultCameraOrLight(true, true, true);
-    // })
 
-    meshTask.onSuccess = function (task) {
-        console.log('loaded ' + task.loadedMeshes[1])
-        task.loadedMeshes[1].position = BABYLON.Vector3.Zero();
-        let material = task.loadedMeshes[1].material
-            = new BABYLON.StandardMaterial('mat', scene);
-        // material.emissiveColor = BABYLON.Color3.Blue();
-        material.diffuseColor = BABYLON.Color3.Red();
-        let material1 = task.loadedMeshes[0].material
-            = new BABYLON.StandardMaterial('mat', scene);
-        // material.emissiveColor = BABYLON.Color3.Blue();
-        material1.diffuseColor = BABYLON.Color3.Green();
-    }
+    camera.wheelPrecision = 0.5;
+    // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
+    var light = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0, -1, 0), scene);
 
-    // Move the light with the camera
-    scene.registerBeforeRender(function () {
-        light.position = camera.position;
+    // Default intensity is 1. Let's dim the light a small amount
+    light.intensity = 0.5;
+
+    // THE MESH I WANT TO IMPORT AND TO Re-COLOR
+    BABYLON.SceneLoader.ImportMesh("", "./", "cubemtlobj.obj", scene, function (newMeshes) {
+        mesh = newMeshes[0];
+        mesh.material = new BABYLON.StandardMaterial("mat", scene);
+        mesh.material.emissiveColor = new BABYLON.Color3.Green()
     });
 
-    assetsManager.onFinish = function (tasks) {
-        engine.runRenderLoop(function () {
-            scene.render();
-        });
-    };
-
-    assetsManager.load();
-
     return scene;
-}
+
+};
+
+
+
+
 var engine;
 try {
     engine = createDefaultEngine();
@@ -72,3 +65,25 @@ engine.runRenderLoop(function () {
 window.addEventListener("resize", function () {
     engine.resize();
 });
+
+function redColor() {
+    changeColor(1, 0, 0)
+}
+
+function yellowColor() {
+    changeColor(1, 1, 0)
+
+}
+
+function greenColor() {
+    changeColor(0, 0.5, 0)
+
+}
+
+function changeColor(r, g, b) {
+    BABYLON.SceneLoader.ImportMesh("", "./", "cubemtlobj.obj", scene, function (newMeshes) {
+        mesh = newMeshes[0];
+        mesh.material = new BABYLON.StandardMaterial("mat", scene);
+        mesh.material.emissiveColor = new BABYLON.Color3(r, g, b)
+    });
+}

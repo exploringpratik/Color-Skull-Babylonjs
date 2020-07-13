@@ -35,15 +35,31 @@
 
         #renderCanvas {
             width: 100%;
-            height: 100%;
+            height: 90%;
             touch-action: none;
+        }
+
+        ul {
+            display: flex;
+            list-style: none;
         }
     </style>
 </head>
 
 <body>
     <canvas id="renderCanvas"></canvas>
-    <script src="script.js"></script>
+    <ul>
+        <li>
+            <button class='red-button' onclick="redColor()">Red</button>
+        </li>
+        <li>
+            <button class='yellow-button' onclick="yellowColor()">Yellow</button>
+        </li>
+        <li>
+            <button class='green-button' onclick="greenColor()">Green</button>
+        </li>
+    </ul>
+    <script src="./script.js"></script>
 </body>
 
 </html>
